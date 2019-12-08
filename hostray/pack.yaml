@@ -1,0 +1,15 @@
+# this is packing list indicated what are the files should be pack
+# if this file does not exist under the project folder, all of the file under the folder will be packed
+
+include:
+# if include is not specfied, collect all of the files under the server folder
+# write relative file, directory
+
+exclude:
+# if exclude is not specfied, keeps all of the files
+# write relative file, directory, or extension path
+# - 'hostray/unit_test'
+# - 'hostray/web/client.py'
+- 'hostray/web/pack.py'
+- '.log'
+- 'pack.yaml'

@@ -1,0 +1,25 @@
+code,tw,en
+400,錯誤的請求,Bad Request
+401,拒絕存取,Unauthorized Access
+402,需先付錢,Payment Required
+403,已禁止,Forbidden
+404,找不到頁面,Not Found
+405,不允許的方法,Method Not Allowed
+406,用戶端瀏覽器不接受要求頁面的 MIME 類型,Not Acceptable
+407,需要 Proxy 驗證,Proxy Authentication Required
+408,請求逾時,Request Timeout
+409,資源狀態衝突,Conflict
+410,資源不存在,Gone
+411,Content-Length未定義,Length Required
+412,指定條件失敗,Precondition Failed
+413,要求的實體太大,Request Entity Too Large
+414,要求 URI 太長,Request-URI Too Long
+415,不支援的媒體類型,Unsupported Media Type
+416,無法滿足要求的範圍,Requested Range Not Satisfiable
+417,執行失敗,Expectation Failed
+500,內部伺服器錯誤,Internal Server Error
+501,未實作的目標,Not Implemented
+502,無效的閘道,Bad Gateway
+503,服務無法使用,Service Unavailable
+504,閘道逾時,Gateway Timeout
+505,不支援的 HTTP 版本,HTTP Version Not Supported

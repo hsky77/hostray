@@ -1,0 +1,29 @@
+code,tw,en
+100,正在關閉應用程式,stopping application
+101,應用程式已停止,application stoped
+102,{}不是{}的子class,{} is not the subclass of {}
+103,資料夾 {} 不存在,directory {} does not exist
+120,{} 缺少 {} 欄位,{} requires parameter {}
+121,"{} 欄位 {} 類型錯誤, {} 不是 {}","{} parameter {} type error, {} is not {}"
+122,HierarchyElementMeta 設定錯誤: {},HierarchyElementMeta does not setup properly: {}
+123,{} 欄位 {} 不合法,{} parameter {} is not valid
+200,{} 與 {} component enum key {} 重複,{} and {} contain duplicated key {}
+201,"載入 component 失敗, server: {}, key: {}","loading component failed, server: {}, key: {}"
+202,component 類型 {} 不存在,component type {} does not exist
+203,component 缺少必要參數: {},component missing required parameter: {}
+204,{} 不是OrmDBEntityAccessor綁定的函式,{} is not the bound method of OrmDBEntityAccessor
+205,資料庫類型未指定,database module is not specfied
+206,"不支援的資料庫類型 database id: {}, module: {}",database id {} module {} does not support
+300,"載入 controller enum 失敗, server: {}, key: {}","loading controller enum failed, server: {}, key: {}"
+301,缺少必要參數: {},missing required parameter: {}
+302,{} 不是 {} 類型的物件,{} is not the object of {}
+303,欄位 {} 不合法,key {} is not valid
+310,"頁面已過期,請刷新頁面","This page is expired, please refresh pages"
+311,資料已新增,data has been added
+312,資料已更新,data has been updated
+313,資料已刪除,data has been deleted
+314,無資料異動,no data has been modified
+315,查無資料,data does not exist
+316,新增資料失敗,Adding data is failed
+320,{} 上傳完成,{} has been uploaded
+321,連線失敗,connection failed

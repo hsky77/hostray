@@ -1,0 +1,28 @@
+code,tw,en
+0,"語系: {}, code: {} 不存在","language: {}, code: {} does not exist"
+1,"語言包 code 重複, code: {}, language: {}","duplicated code - code: {}, language: {}"
+2,"語言包解析錯誤, file: {}","language file parsing failed, file: {}"
+3,訊息參數結合錯誤 code: {} args: {},"message format error, code: {} args: {}"
+10,必須是 aysnc function,must be an async function
+11,async generator 沒有 yield,async generator didn't yield
+12,async generator 沒有終止,async generator didn't stop
+13,async generator throw() 之後沒有終止,async generator didn't stop after athrow()
+20,"Enum類型不合法, 現在:{}, 應是:{}","enum type is not valid got: {}, valid type: {}"
+21,{} 不是 async callback function,{} is not awaitable function
+30,{} 不是 {} 類型的物件,{} is not the object of {}
+31,"找不到可用的日期格式, input: {}","there is not valid datetime format, input: {}"
+40,"DynamicClassEnumType 必須是 Tuple(enum_type_key:str, module:str, class_or_function:str)","DynamicClassEnumType must be Tuple(enum_type_key:str, module:str, class_or_function:str)"
+41,{} 必須是 class,{} must be a class
+42,{} 必須是 function,{} must be a function
+43,{} 不是 {} 的 subclass,{} is not the subclass of {}
+50,缺少檔名參數,required file_name is missing
+51,缺少 db 主機IP參數,required host is missing
+52,缺少 db 帳號參數,required user is missing
+53,缺少 db 密碼參數,required password is missing
+54,缺少 db 名稱參數,required db_name is missing
+55,欄位 {} 不允許變更,{} is not allowed to update
+56,欄位 {} 類型必須是 {},column {} type must be {}
+57,欄位 {} 不合法,column {} is not valid
+90,{} 不是 HierarchyElementMeta 的子 class,{} is not the subclass of HierarchyElementMeta
+91,{} 沒有 cls_parameters,{} has not cls_parameters
+92,{} 的 cls_parameters 沒有 {},{} cls_parameters does not contain {}
