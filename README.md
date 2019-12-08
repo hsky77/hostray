@@ -1,5 +1,6 @@
-What is hostray ?
-=================
+# hostray
+
+[![Documentation Status](https://readthedocs.org/projects/hostray/badge/?version=latest)](https://hostray.readthedocs.io/en/latest/?badge=latest)
 
 **hostray** is a pure python project adding simple, scalable, and configurable module framework and utilties to opensource web frameworks. It's currentlly based on [Tornado Web Server](https://www.tornadoweb.org/en/stable/)
 
@@ -15,4 +16,4 @@ create a minimal runable server project:
    * Open Browser views the response of hello api, [click](http://localhost:8888/hello)
    * To stop server, press **ctrl+c** in the command prompt
 
-Read [documentation](https://hostray.readthedocs.io/en/latest/) for more information
+Read [documentation](https://hostray.readthedocs.io/en/latest/) for more information (still updating...)
