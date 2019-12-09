@@ -18,7 +18,7 @@ setuptools.setup(
     version=Version,
     author="hsky77",
     author_email="howardlkung@gmail.com",
-    description="customized Tornado based web server utilities",
+    description="configurable module framework and utilties based on Tornado Web Server",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/hsky77/hostray",
