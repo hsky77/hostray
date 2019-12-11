@@ -11,3 +11,5 @@ Documentation
    getstart
    rmodules
    buildin
+   web_refer
+   util_refer

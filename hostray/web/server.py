@@ -61,8 +61,7 @@ class HostrayApplication(Application):
         if self.do_close:
             if not self.exiting:
                 self.exiting = True
-                self.component_manager.boardcast(
-                    'dispose', self.component_manager)
+                self.component_manager.dispose_components()
                 from tornado.ioloop import IOLoop
                 IOLoop.current().stop()
                 self.logger.info(self.get_localized_message(

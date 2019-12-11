@@ -68,6 +68,9 @@ class ComponentManager():
             info[component.component_type.enum_key] = component.info()
         return info
 
+    def dispose_components(self) -> None:
+        self.boardcast('dispose', self)
+
     def boardcast(self, method: str, *arugs, **kwargs) -> List[Tuple[ComponentTypes, Any]]:
         """
         this function invokes the non-awaitable methods of stored components and

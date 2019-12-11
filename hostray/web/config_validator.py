@@ -67,18 +67,19 @@ class ConfigBaseElementMeta(HierarchyElementMeta):
         return obj
 
     def get_parameter(self, key_routes: str, delimeter: str = '.'):
-        routes = key_routes.split(delimeter)
         temp = self
-        for key in routes:
-            if hasattr(temp, '_parameters'):
-                if key in temp._parameters:
-                    temp = temp._parameters[key]
+        if key_routes is not None:
+            routes = key_routes.split(delimeter)            
+            for key in routes:
+                if hasattr(temp, '_parameters'):
+                    if key in temp._parameters:
+                        temp = temp._parameters[key]
+                    else:
+                        raise HostrayWebException(
+                            LocalCode_Parameters_No_Key, temp, key)
                 else:
                     raise HostrayWebException(
-                        LocalCode_Parameters_No_Key, temp, key)
-            else:
-                raise HostrayWebException(
-                    LocalCode_No_Parameters, temp)
+                        LocalCode_No_Parameters, temp)
 
         return temp.parameter
 

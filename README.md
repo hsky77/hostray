@@ -1,6 +1,6 @@
 # hostray
 
-[![Documentation Status](https://readthedocs.org/projects/hostray/badge/?version=latest)](https://hostray.readthedocs.io/en/latest/?badge=latest) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://img.shields.io/pypi/dm/hostray.svg)](https://pypi.org/project/hostray/) [![PyPI version](https://img.shields.io/pypi/v/hostray.svg)](https://pypi.org/project/hostray/)
+[![Documentation Status](https://readthedocs.org/projects/hostray/badge/?version=latest)](https://hostray.readthedocs.io/en/latest/?badge=latest) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://img.shields.io/pypi/v/hostray.svg)](https://pypi.org/project/hostray/)
 
 **hostray** is a pure python project adding simple, scalable, and configurable module framework and utilties to opensource web frameworks. It's currentlly based on [Tornado Web Server](https://www.tornadoweb.org/en/stable/)
 

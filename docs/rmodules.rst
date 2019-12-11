@@ -25,7 +25,6 @@ Its value is a ``tuple`` stores (**key**, **package**, **class_or_function**) fo
 the component configurations in ``server_config.yaml`` with the components should be imported. The code of ``__init__.py`` looks like:
 
 .. code-block:: python
-    :linenos:
 
     from hostray.web.component import ComponentTypes
 
@@ -36,19 +35,18 @@ the component configurations in ``server_config.yaml`` with the components shoul
 In ``hello.py``, it defines the ``HelloComponent`` inherits from ``Component`` class, the code looks like:
 
 .. code-block:: python
-    :linenos:
 
     from hostray.web.component import Component
 
-    class HelloComponent(Component):
-        def init(self, component_manager, *arugs, **kwargs) -> None:
-            print('init HelloComponent from', __package__)
+    class HelloController(RequestController):
+        async def get(self):
+            hello_comp = self.component_manager.get_component(HelloComponentTypes.Hello)
+            self.write(hello_comp.hello())
 
 
 In ``server_config.yaml``, add the key **'hello'** under component block. That tells **hostray** load **HelloComponent** when starting api server:
 
 .. code-block:: yaml
-    :linenos:
 
     # in server_config.yaml
 
@@ -63,27 +61,31 @@ Make Project's Modules Work
 
 Briefly lists the things should be done for each reserved module:
 
-`controller <refer.html#controllers>`__
+* `controller <buildin.html#controllers>`__
+
     * defines enums inherits from ``hostray.web.controller.ControllerType`` in ``__init__.py``
-    * implements the controller inherits or directly use `tornado.web handlers <https://www.tornadoweb.org/en/stable/web.html>`__ or hostray build-in controllers
+    * implements the controller inherits/directly use `tornado.web handlers <https://www.tornadoweb.org/en/stable/web.html>`__ or `hostray build-in controllers <http://localhost:8888/buildin.html#controllers>`__
     * configres the controller block in ``server_config.yaml``
-`component <refer.html#components>`__
+
+* `component <buildin.html#components>`__
+
     * defines enums inherits from ``hostray.web.component.ComponentTypes`` in ``__init__.py``
-    * implements the component class inherits from ``hostray.web.component.Component``
+    * implements the component class inherits from `hostray.web.component.Component <web_refer.html#hostray.web.component.default_component.Component>`__
     * configres the component block in ``server_config.yaml``
-`unit_test <refer.html#unittest-cases>`__
+
+* `unit_test <buildin.html#unittest-cases>`__
+
     * defines enums inherits from ``hostray.unit_test.UnitTestTypes`` in ``__init__.py``
-    * implements the test cases inherits from ``hostray.unit_test.UnitTestCase``
+    * implements the test cases inherits from `hostray.unit_test.UnitTestCase <web_refer.html#hostray.unit_test.UnitTestCase>`__
 
 Configuration Validator
 =======================================================
 
-It is great if the server configurations could be validated and told the configred mistakes. 
-**hostray** provide the `configurations validator <refer.html#configuration-validator>`__ checks the build-in components and controllers. The validator is also extendable.
-The following example shows how to add validator of hello project's HelloComponent.
+**hostray** provides `configurations validator <web_refer.html#configuration-validator>`__ checks the build-in components and controllers. 
+The validator is extendable to validate project extended components and controllers, and
+the following example shows how to add validator of hello project's HelloComponent.
 
 .. code-block:: python
-    :linenos:
 
     from hostray.web.component import ComponentTypes
 
@@ -92,53 +94,9 @@ The following example shows how to add validator of hello project's HelloCompone
     # add hello validator to component config validator
     HostrayWebConfigComponentValidator.set_cls_parameters(
         ConfigContainerMeta('hello', False,
-            # ConfigElementMeta('p1', str, True) # marked, so validator does not validate HelloComponent's 'p1' argument
+            # ConfigElementMeta('p1', str, True) # validate HelloComponent's 'p1' argument is required and string type
         )
     )
 
-    class UTServerComponentTypes(ComponentTypes):
+    class HelloComponentTypes(ComponentTypes):
         Hello = ('hello', 'hello', 'HelloComponent')
-
-:class hostray.web.config_validator.ConfigBaseElementMeta:
-
-    base config element metaclass
-
-    :set_cls_parameters(\*cls_parameters) -> None:
-
-        set the sub class elements
-    
-    :get_cls_parameter(key_routes, delimeter=".") -> type:
-
-        get the sub class elements
-
-:class hostray.web.config_validator.HostrayWebConfigValidator:
-
-    default validator to validate `server_config.yaml` inherits from ConfigBaseElementMeta.
-
-:class hostray.web.config_validator.HostrayWebConfigControllerValidator:
-
-    default validator to validate the controller block of ``server_config.yaml`` inherits from ConfigBaseElementMeta.
-
-:class hostray.web.config_validator.HostrayWebConfigComponentValidator:
-
-    default validator to validate the component block of ``server_config.yaml`` inherits from ConfigBaseElementMeta.
-
-:class hostray.web.config_validator.ConfigContainerMeta:
-
-    config validation element metaclass contain sub elements
-
-:class hostray.web.config_validator.ConfigElementMeta:
-
-    config validation element metaclass store parameters
-
-:class hostray.web.config_validator.ConfigScalableContainerMeta:
-
-    scalable config validation element metaclass contain sub elements metaclass
-
-:class hostray.web.config_validator.ConfigScalableElementMeta:
-
-    scalable config validation element metaclass
-
-:class hostray.web.config_validator.ConfigSwitchableElementMeta:
-
-    switchable config validation element metaclass

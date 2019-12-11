@@ -260,7 +260,7 @@ class OrmDBComponent(Component):
 
         ATTENTION: do not call this function in the clauses of 'with reserve_worker():' and 'with reserve_worker_async():'
         """
-        if self.dbs[db_id]['open']:
+        if self.dbs[db_id]['open'] and not self.dbs[db_id]['module'] == 'sqlite_memory':
             if self.dbs[db_id]['worker'] < 2:
                 force_reconnect = False
 
@@ -279,7 +279,7 @@ class OrmDBComponent(Component):
 
         ATTENTION: do not call this function in the clauses of 'with reserve_worker():' and 'with reserve_worker_async():'
         """
-        if self.dbs[db_id]['open']:
+        if self.dbs[db_id]['open'] and not self.dbs[db_id]['module'] == 'sqlite_memory':
             if self.dbs[db_id]['worker'] < 2:
                 force_reconnect = False
 

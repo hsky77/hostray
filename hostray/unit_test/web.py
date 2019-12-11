@@ -14,7 +14,7 @@ from ..web import Component_Module_Folder, Controller_Module_Folder
 from .base import UnitTestCase
 
 root_setting = {'name': 'hostray UT Server Config',
-                'port': 8888,
+                'port': 58564,
                 'debug': True,
                 'cookie_secret': 'test-secret',
                 'ssl': {
@@ -44,7 +44,7 @@ component_setting = {
                         'get': None
             },
         },
-        'http://localhost:8888':
+        'http://localhost:58564':
         {
 
             '/alive': {
@@ -304,7 +304,7 @@ class WebTestCase(UnitTestCase):
                 from ..web.client import StreamUploadClient
                 with StreamUploadClient() as client:
                     response = client.send_bytes(
-                        'http://localhost:8888/test_bytes_upload', b'i am bytes')
+                        'http://localhost:58564/test_bytes_upload', b'i am bytes')
                     self.assertEqual(response.status_code, 200)
                     self.assertEqual(response.text, 'i am bytes')
 
@@ -316,7 +316,7 @@ class WebTestCase(UnitTestCase):
                     def received_ws_msg(msg):
                         self.received_msg = msg
 
-                    client.connect('ws://localhost:8888/test_socket',
+                    client.connect('ws://localhost:58564/test_socket',
                                    on_message_callback=received_ws_msg)
                     client.write_message('Hello There')
 
