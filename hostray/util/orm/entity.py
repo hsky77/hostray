@@ -47,10 +47,10 @@ class EntityBaseAddon():
     column_type_validations: Dict[str, Any] = {}
 
     # indicate the columns are not allowed to update value
-    column_fix = []
+    column_fix: List[str] = []
 
     # indicate the excluded columns for the entity data should be response to client
-    client_excluded_columns = []
+    client_excluded_columns: List[str] = []
 
     # indicate datetime converter from database to json serializable dict
     dt_converter = PY_DT_Converter

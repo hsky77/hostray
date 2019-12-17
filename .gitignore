@@ -131,3 +131,5 @@ dmypy.json
 # extra
 .vscode/
 dependency/
+docs/make.bat
+docs/Makefile

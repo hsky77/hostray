@@ -122,9 +122,14 @@ class WorkerTestCase(UnitTestCase):
             worker.run_method(foo, 1, kwindex=2,
                               on_finish=on_finish, on_exception=on_exception)
 
-            self.check_exp = True
-            worker.run_method(foo_raise_exception, 1, kwindex=2,
-                              on_finish=on_finish, on_exception=on_exception)
+            while worker.is_func_running:
+                pass
+
+            self.check_exp = False
+            try:
+                worker.run_method_and_wait(foo_raise_exception, 1, kwindex=2)
+            except:
+                self.check_exp = True
 
             self.assertTrue(self.check_exp)
 

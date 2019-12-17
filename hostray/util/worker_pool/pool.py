@@ -85,7 +85,7 @@ class WorkerPool():
             'pending_task': w[self.KEY_WORKER].pending_count
         } for w in self._q]
 
-    def run_method(self, func: Callable, *args, identity: Any = None, **kwargs) -> Any:
+    def run_method(self, func: Callable, *args, identity: str = None, **kwargs) -> Any:
         """execute function, note this causes current thread blocking"""
         executor = self._get_free_executor(identity=identity)
         return executor.run_method(func, *args, **kwargs)
@@ -156,10 +156,10 @@ class WorkerPool():
         from ..utils import generate_base64_uid
         return generate_base64_uid()
 
-    def _reserve_worker(self, identity: Any) -> bool:
+    def _reserve_worker(self, identity: str) -> bool:
         return self._get_free_executor(identity=identity) is not None
 
-    def _cancel_reservation(self, identity: Any) -> None:
+    def _cancel_reservation(self, identity: str) -> None:
         if identity is not None:
             for i in range(0, len(self._q)):
                 if identity is self._q[i][self.KEY_IDENTITY]:
@@ -183,7 +183,7 @@ class AsyncWorkerPool(WorkerPool):
         finally:
             self._cancel_reservation(identity)
 
-    async def run_method_async(self, func: Callable, *args, identity: Any = None, **kwargs) -> Any:
+    async def run_method_async(self, func: Callable, *args, identity: str = None, **kwargs) -> Any:
         executor = self._get_free_executor(identity=identity)
         return await executor.run_method_async(func, *args, **kwargs)
 

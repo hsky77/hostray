@@ -27,6 +27,12 @@ class _BaseWorker(Thread):
         self._pause_cond = Condition(Lock())
         self.pause()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.dispose()
+
     @property
     def is_started(self):
         return self._started.is_set()
@@ -41,7 +47,7 @@ class _BaseWorker(Thread):
         self._running = False
         self.resume()
 
-    def start(self):
+    def start(self) -> None:
         self._running = True
         super().start()
 
@@ -58,7 +64,7 @@ class _BaseWorker(Thread):
                 self._pause_cond.notify()
                 self._pause_cond.release()
 
-    def run(self):
+    def run(self) -> None:
         """do not directly call this function, it will be called by thread automatically"""
         while self._running:
             with self._pause_cond:
@@ -91,12 +97,6 @@ class Worker(_BaseWorker):
         self._on_finish = None
         self._on_exception = None
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dispose()
-
     @property
     def is_func_running(self) -> bool:
         return self._func is not None
@@ -106,7 +106,7 @@ class Worker(_BaseWorker):
                    *args,
                    on_finish: Callable[[Any], None] = None,
                    on_exception: Callable[[Exception], None] = None,
-                   **kwargs) -> None:
+                   **kwargs) -> bool:
         """return True if function will be executed, False if there is a function is running"""
         result = False
         with self._run_method_lock:
@@ -199,12 +199,6 @@ class FunctionQueueWorker(_BaseWorker):
         super().__init__(name)
         self.__tasks = []
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dispose()
-
     @property
     def pending_count(self) -> int:
         return len(self.__tasks)
@@ -214,7 +208,7 @@ class FunctionQueueWorker(_BaseWorker):
                    *args,
                    on_finish: Callable[[Any], None] = None,
                    on_exception: Callable[[Exception], None] = None,
-                   **kwargs):
+                   **kwargs) -> None:
         """func will be queued and run when the worker thread is free"""
         with self._run_method_lock:
             if callable(func):
@@ -258,12 +252,6 @@ class FunctionLoopWorker(_BaseWorker):
         self.__on_exception = None
         self.stop()
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dispose()
-
     def dispose(self):
         super().dispose()
         self.stop()
@@ -282,7 +270,7 @@ class FunctionLoopWorker(_BaseWorker):
                    *args,
                    on_finish: Callable[[Any], None] = None,
                    on_exception: Callable[[Exception], None] = None,
-                   **kwargs):
+                   **kwargs) -> None:
         """start looping function"""
         with self._run_method_lock:
             if self._func is None:

@@ -11,5 +11,6 @@ Documentation
    getstart
    rmodules
    buildin
+   usage
    web_refer
    util_refer

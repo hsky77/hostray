@@ -63,7 +63,7 @@ def get_connection_string(db_module: DB_MODULE_NAME, **kwargs) -> str:
     return connect_string
 
 
-def get_session_maker(db_module: DB_MODULE_NAME, declared_entity_base: DeclarativeMeta, autoflush: bool = False, **kwargs) -> type(Session):
+def get_session_maker(db_module: DB_MODULE_NAME, declared_entity_base: DeclarativeMeta, autoflush: bool = False, **kwargs) -> Session:
     connect_args = {}
     engine_args = {}
     engine = create_engine(get_connection_string(db_module, **kwargs),

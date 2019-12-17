@@ -1,4 +1,4 @@
-Configuration and Build-in Modules
+Build-in Modules Configuration
 ****************************************
 
 .. contents:: Table of Contents

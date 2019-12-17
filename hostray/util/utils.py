@@ -90,7 +90,7 @@ def convert_tuple_to_dict(t: tuple, key_name: str) -> Dict:
 def get_host_ip(remote_host: str = '8.8.8.8', port: int = 80) -> str:
     """use this function to get the host ip, no guarantee"""
     import socket
-    ip = socket.gethostbyname(socket.gethostname())
+    ip = ''
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((remote_host, port))
