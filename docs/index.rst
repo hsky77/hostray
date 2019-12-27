@@ -2,6 +2,8 @@
 
 .. include:: readme.rst
 
+.. include:: changelog.rst
+
 Documentation
 =================================
 
@@ -9,8 +11,8 @@ Documentation
    :maxdepth: 2
 
    getstart
-   rmodules
    buildin
+   rmodules
    usage
    web_refer
    util_refer

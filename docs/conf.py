@@ -22,7 +22,12 @@ copyright = '2019-present, the hostray authors and contributors'
 author = 'hsky77'
 
 # The full version, including alpha/beta/rc tags
-release = '0.7.2'
+import sys
+import os
+sys.path.insert(0,  os.path.join(os.getcwd(), '../'))
+
+from hostray import Version
+release = Version
 
 
 # -- General configuration ---------------------------------------------------

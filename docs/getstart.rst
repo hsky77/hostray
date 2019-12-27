@@ -35,7 +35,6 @@ Commands
 .. parsed-literal::
 
     >python3 -m hostray -h
-    
     usage: hostray [-h] {start,pack,test,create} ...
 
     optional arguments:
@@ -43,10 +42,14 @@ Commands
 
     command:
       {start,pack,test,create}
-        start               start server with specfied directory path
-        pack                pack server with specfied directory path
-        test                test hostray library or specfied server path
-        create              create a server template with specfied directory path
+        start               start server with specfied server project directory
+                            path
+        pack                pack server with specfied server project directory
+                            path
+        test                test hostray library or specfied server project
+                            directory path
+        create              create a server template with specfied server project
+                            directory path
 
 Use Component in API Controller
 ====================================

@@ -46,7 +46,7 @@ Controllers
 
 .. class:: hostray.web.controller.StreamingDownloadController
 
-    abstract class inherits from `hostray.web.controller.RequestController <web_refer.html#hostray.web.controller.RequestController>`__.
+    Abstract class inherits from `hostray.web.controller.RequestController <web_refer.html#hostray.web.controller.RequestController>`__.
 
     .. function:: _prepare_binary()-> bytes
 
@@ -78,7 +78,7 @@ Components
 
 .. class:: hostray.web.component.default_component.Component
 
-    base abstract class of component
+    Base abstract class of component
 
     .. function:: init(component_manager, \*arugs, \*\*kwargs) -> None
 
@@ -102,7 +102,7 @@ Components
 
 .. class:: hostray.web.component.default_component.ComponentManager
 
-    contain and manage the loaded components
+    Contain and manage the loaded components
 
     .. function:: @property components -> List[Component]
 
@@ -357,7 +357,7 @@ Components
 
 .. class:: hostray.web.component.optional_component.OrmDBComponent
 
-    manage `sqlalchemy <https://www.sqlalchemy.org/>`__ db access worker pools and execute ``hostray.util.orm.OrmDBEntityAccessor``
+    Managing `sqlalchemy <https://www.sqlalchemy.org/>`__ db access worker pools and execute ``hostray.util.orm.OrmDBEntityAccessor``
 
     .. function:: get_pool_obj(db_id: str) -> OrmAccessWorkerPool
 
@@ -482,7 +482,7 @@ Configuration Validator
 
 .. class:: hostray.web.config_validator.ConfigContainerMeta
 
-    config validation element metaclass contain sub elements
+    Configration validation element metaclass contain sub elements
 
     .. function:: __new__(name: str, required: bool, *parameters) -> type
 
@@ -496,7 +496,7 @@ Configuration Validator
 
 .. class:: hostray.web.config_validator.ConfigElementMeta
 
-    config validation element metaclass store parameters
+    Configration validation element metaclass store parameters
 
     .. function:: __new__(name: str, parameter_type: Any, required: bool) -> type
 
@@ -510,7 +510,7 @@ Configuration Validator
 
 .. class:: hostray.web.config_validator.ConfigScalableContainerMeta
 
-    scalable config validation element metaclass contain sub elements metaclass
+    scalable configration validation element metaclass contain sub elements metaclass
 
     .. function:: __new__(parameter_type: Union[str, int], *parameters) -> type
 
@@ -523,7 +523,7 @@ Configuration Validator
 
 .. class:: hostray.web.config_validator.ConfigScalableElementMeta
 
-    scalable config validation element metaclass
+    scalable configration validation element metaclass
 
     .. function:: __new__(element_type: Union[str, int], parameter_type: Any) -> type
 
@@ -536,7 +536,7 @@ Configuration Validator
 
 .. class:: hostray.web.config_validator.ConfigSwitchableElementMeta
 
-    switchable config validation element metaclass
+    switchable configration validation element metaclass
 
     .. function:: __new__(name: str, parameter_type: Any, required: bool, *parameters) -> type
 

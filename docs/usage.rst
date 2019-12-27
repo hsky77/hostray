@@ -1,6 +1,8 @@
 Usage of Utils
 *********************************
 
+.. contents:: Table of Contents
+
 Worker
 =================================
 
@@ -116,7 +118,7 @@ ORM
 =================================
 
 `sqlalchemy <https://www.sqlalchemy.org/>`__ is popular Python SQL toolkit and Object Relational Mapper (ORM). 
-**hostray.util.orm** wraps the ORM modules of `sqlalchemy <https://www.sqlalchemy.org/>`__ to simplify usage of database
+``hostray.util.orm`` wraps the ORM modules of `sqlalchemy <https://www.sqlalchemy.org/>`__ to simplify usage of database
 
     * ``hostray.util.orm.DB_MODULE_NAME``: ``enum`` defines the type of database access modules in ``SQLITE_MEMORY``, ``SQLITE_FILE``, and ``MYSQL``.
     * ``hostray.util.orm.get_declarative_base``: function returns key-managed singleton `sqlalchemy.ext.declariative.api.DeclarativeMeta <https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/api.html>`__
@@ -305,7 +307,7 @@ More Support Utilities
         logger = get_Hostray_logger('test', log_to_resource=True)   # log to current working directory
         logger.info('hello')
 
-* **dt** is enum specfied datetime string parser to parse specfied format
+* **hostray** datetime helper:
 
     example:
 
