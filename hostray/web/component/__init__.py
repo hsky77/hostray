@@ -94,16 +94,19 @@ def __create_optional_components(component_manager: ComponentManager, component_
                 break
 
     for key in component_settings:
+        comp_type = None
         for component_type in component_types:
             try:
                 comp_type = component_type(key)
-                component_manager.invoke(comp_type, 'init',
-                                         component_manager,
-                                         **(component_settings[comp_type.enum_key] or {}),
-                                         root_dir=root_dir)
                 break
             except:
                 continue
+
+        if comp_type:
+            component_manager.invoke(comp_type, 'init',
+                                     component_manager,
+                                     **(component_settings[comp_type.enum_key] or {}),
+                                     root_dir=root_dir)
 
 
 def create_server_component_manager(component_settings: Union[Dict, None], root_dir: str,

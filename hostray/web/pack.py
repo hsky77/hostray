@@ -59,13 +59,11 @@ class HostrayPack(object):
         new_paths = []
         server_folder = os.path.dirname(server_folder)
         for path in paths:
-            m = re.match('(.*):/', path)
-            if m:
-                path = path.replace(path[m.start():m.end()],
-                                    path[m.start():m.end()].upper())
-
-            arc_path = path.replace(server_folder, '')
-            arc_path = arc_path[1:] if arc_path[0] == '/' else arc_path
+            if os.path.isabs(path):
+                arc_path = join_path(os.path.relpath(path, server_folder))
+            else:
+                arc_path = join_path(os.path.relpath(
+                    join_path(server_folder, path), server_folder))
             new_paths.append((path, arc_path))
         return new_paths
 

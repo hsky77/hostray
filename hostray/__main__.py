@@ -66,6 +66,15 @@ def create_server_folder(server_dir: str = 'hello_world'):
         f.write('''\
 from hostray.web.component import ComponentTypes
 
+from hostray.web.config_validator import ConfigContainerMeta, ConfigElementMeta, HostrayWebConfigComponentValidator
+
+# add hello validator to component config validator
+HostrayWebConfigComponentValidator.set_cls_parameters(
+    ConfigContainerMeta('hello', False,
+        ConfigElementMeta('p1', str, True) # validate HelloComponent's 'p1' argument is required and string type
+    )
+)
+
 class HelloComponentTypes(ComponentTypes):
     Hello = ('hello', 'hello', 'HelloComponent')
 ''')
@@ -76,8 +85,8 @@ from hostray.web.component import Component
 from . import HelloComponentTypes
 
 class HelloComponent(Component):
-    def init(self, component_manager, *arugs, **kwargs) -> None:
-        print('init Hello component load from', __package__)
+    def init(self, component_manager, p1, *arugs, **kwargs) -> None:
+        print('init Hello component load from', __package__, 'and the parameters p1:', p1)
 
     def hello(self):
         return 'Hello World, This is hostray generate hello component'
@@ -148,6 +157,7 @@ port: 8888
 debug: False
 component:
   hello: 
+    p1: 'This is p1'
 controller:
   /hello:
     enum: hello_world
@@ -193,17 +203,17 @@ def get_command_parser():
     sub_parsers = parser.add_subparsers(title='command')
 
     start_parser = sub_parsers.add_parser(
-        Command_Start_Server, help='start server with specfied directory path')
+        Command_Start_Server, help='start server with specfied server project directory path')
     start_parser.add_argument('server_directory',
-                              help='server directory path')
+                              help='server project directory path')
     start_parser.add_argument('-s', '--http_server', action='store_true',
                               help='start application on tornado http server')
     start_parser.set_defaults(command=Command_Start_Server)
 
     pack_parser = sub_parsers.add_parser(
-        Command_Pack_Server, help='pack server with specfied directory path')
+        Command_Pack_Server, help='pack server with specfied server project directory path')
     pack_parser.add_argument('server_directory',
-                             help='server directory path')
+                             help='server project directory path')
     pack_parser.add_argument(
         '-o', help='specify output compressed file path', default=None)
     pack_parser.add_argument('-w', '--add_wheels', action='store_true',
@@ -213,15 +223,15 @@ def get_command_parser():
     pack_parser.set_defaults(command=Command_Pack_Server)
 
     test_parser = sub_parsers.add_parser(
-        Command_Test_Server, help='test hostray library or specfied server path')
+        Command_Test_Server, help='test hostray library or specfied server project directory path')
     test_parser.add_argument('server_directory', nargs='?',
-                             help='server directory path')
+                             help='server project directory path')
     test_parser.set_defaults(command=Command_Test_Server)
 
     make_serv_parser = sub_parsers.add_parser(
-        Command_Create_Project, help='create a server template with specfied directory path')
+        Command_Create_Project, help='create a server template with specfied server project directory path')
     make_serv_parser.add_argument('server_directory',
-                                  help='server directory path')
+                                  help='server project directory path')
     make_serv_parser.set_defaults(command=Command_Create_Project)
 
     return parser
@@ -230,7 +240,7 @@ def get_command_parser():
 def _init_server_package(server_dir: str) -> None:
     if server_dir is not None:
         if not join_path(Module_Path) in server_dir and not server_dir in sys.path:
-            sys.path.append(os.path.abspath(server_dir))
+            sys.path.insert(0, os.path.abspath(server_dir))
 
         from .util import get_class
         from .web import Component_Module_Folder, Controller_Module_Folder, Unittest_Module_Folder
