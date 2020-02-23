@@ -61,7 +61,8 @@ class DefaultControllerType(ControllerType):
     Frontend = ('frontend', 'tornado.web', 'StaticFileHandler')
     SystemAlive = ('server_alive', 'default_controller',
                    'SystemAliveController')
-    ComponentsInfo = ('components_info', 'default_controller', 'ComponentsInfoController')
+    ComponentsInfo = ('components_info', 'default_controller',
+                      'ComponentsInfoController')
 
 
 class UnitTestControllerType(ControllerType):
@@ -93,7 +94,7 @@ class UnitTestControllerType(ControllerType):
 def _get_controller_enum(key: str, contoller_types: List[ControllerType]):
     for contoller_type in contoller_types:
         try:
-            return contoller_type(key).import_class()
+            return contoller_type(key)
         except:
             continue
 
@@ -113,10 +114,11 @@ def get_controllers(server_setting: Dict, server_dir: str = None) -> List:
 
         for path, v in server_setting[Controller_Module_Folder].items():
             if 'enum' in v:
-                cls_type = _get_controller_enum(v['enum'], contoller_types)
-                if cls_type is None:
+                t = _get_controller_enum(v['enum'], contoller_types)
+                if t is None:
                     raise HostrayWebException(
                         LocalCode_Failed_To_Load_Controller, server_dir, v['enum'])
+                cls_type = t.import_class()
 
                 params = v['params'] if 'params' in v and v['params'] is not None else {}
                 if issubclass(cls_type, StaticFileHandler):
