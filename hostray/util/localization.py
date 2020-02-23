@@ -98,7 +98,7 @@ class Localization():
                 raise Exception(
                     self.__mapping['3'][self.__lang].format(code, strings))
         else:
-            return self.__mapping[self.default_code][self.__lang].format(self.__lang.name, code)
+            return self.__mapping[self.default_code][self.__lang].format(self.__lang, code)
 
 
 BaseLocal = Localization()
