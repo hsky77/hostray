@@ -39,6 +39,8 @@ class RequestController(ControllerAddon, RequestHandler):
         self.required_arugments: dict = {
             k.value: [] for k in RESTfulMethodType}  # not require any arguments
 
+        self.app_name = application.settings.get('name', None)
+
         ControllerAddon.__init__(self, application, request, **kwds)
         RequestHandler.__init__(self, application, request, **kwds)
         self.__cache: dict = None
@@ -60,6 +62,9 @@ class RequestController(ControllerAddon, RequestHandler):
                     self.__cache, cache_id = cache_comp.get(cache_id)
                 self.set_secure_cookie('cache_id', cache_id)
         return self.__cache
+
+    def set_default_headers(self):
+        self.set_header('App-Name', self.app_name)
 
     def get_allowed_arguments(self) -> Dict[str, Any]:
         keys = {}
