@@ -64,4 +64,4 @@ Last Updated:  Monday, 4th November 2019 by hsky77 (howardlkung@gmail.com)
 '''
 
 from .access_executor_pool import OrmAccessWorkerPool, DB_MODULE_NAME, get_session_maker
-from .entity import get_declarative_base, EntityBaseAddon, OrmDBEntityAccessor, DeclarativeMeta
+from .entity import get_declarative_base, EntityBaseAddon, OrmDBEntityAccessor, DeclarativeMeta, Entity

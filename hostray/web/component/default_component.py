@@ -124,6 +124,8 @@ class LoggerComponent(Component):
         setting_loggers(self.default_loggers, self.dir,
                         log_to_resource=self.log_to_resource)
 
+        self.set_default_logger_echo(False)
+
     def set_default_logger_echo(self, echo: bool) -> None:
         from logging import getLogger
         for name in self.default_loggers:
