@@ -61,6 +61,11 @@ class EntityBaseAddon():
         return self._sa_instance_state.identity
 
     @property
+    def str_identity(self) -> str:
+        """get identity of this entity in string"""
+        return json.dumps([str(x) for x in self._sa_instance_state.identity])
+
+    @property
     def primary_key_args(self) -> Dict[str, Any]:
         """get dict contains primary key columns"""
         return {k: v for k, v in self.to_dict().items() if (
