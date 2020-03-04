@@ -17,9 +17,9 @@ root_setting = {'name': 'hostray UT Server Config',
                 'port': 58564,
                 'debug': True,
                 'cookie_secret': 'test-secret',
-                'ssl': {
-                    'crt': 'crt.crt',
-                    'key': 'key.key'}
+                # 'ssl': {
+                #     'crt': 'crt.crt',
+                #     'key': 'key.key'}
                 }
 
 component_setting = {
