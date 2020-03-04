@@ -34,6 +34,7 @@ LocalCode_Parameter_Required = 120
 LocalCode_Parameter_Type_Error = 121
 LocalCode_Setup_Error = 122
 LocalCode_Invalid_Parameter = 123
+LocalCode_File_Not_Found = 124
 
 # components
 LocalCode_Component_Duplicated_Key = 200

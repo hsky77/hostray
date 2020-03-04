@@ -19,7 +19,7 @@ from .component import (ComponentManager, ComponentTypes, DefaultComponentTypes,
 
 from .controller import ControllerType, get_controllers
 
-from . import (HostrayWebException, LocalCode_Application_Closing,
+from . import (HostrayWebException, LocalCode_Application_Closing, LocalCode_File_Not_Found,
                LocalCode_Application_Closed, Component_Module_Folder,
                Hostray_Web_Config_File, Controller_Module_Folder)
 
@@ -121,14 +121,28 @@ class HostrayServer():
 
         self._make_app()
 
-        if use_http_server:
+        if use_http_server or 'ssl' in self.config:
             from tornado.web import HTTPServer
 
             if 'ssl' in self.config:
+                if not os.path.isfile(join_path(self.config['ssl']['crt'])):
+                    raise HostrayWebException(
+                        LocalCode_File_Not_Found, join_path(self.config['ssl']['crt']))
+                if not os.path.isfile(join_path(self.config['ssl']['key'])):
+                    raise HostrayWebException(
+                        LocalCode_File_Not_Found, join_path(self.config['ssl']['key']))
+
                 import ssl
                 ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
                 ssl_ctx.load_cert_chain(join_path(self.config['ssl']['crt']),
                                         join_path(self.config['ssl']['key']))
+                if 'ca' in self.config['ssl']:
+                    if not os.path.isfile(join_path(self.config['ssl']['ca'])):
+                        raise HostrayWebException(
+                            LocalCode_File_Not_Found, join_path(self.config['ssl']['ca']))
+                    ssl_ctx.load_verify_locations(
+                        join_path(self.config['ssl']['ca']))
+
                 self.server = HTTPServer(self.app, ssl_options=ssl_ctx)
             else:
                 self.server = HTTPServer(self.app)

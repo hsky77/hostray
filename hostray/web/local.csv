@@ -7,6 +7,7 @@ code,tw,en
 121,"{} 欄位 {} 類型錯誤, {} 不是 {}","{} parameter {} type error, {} is not {}"
 122,HierarchyElementMeta 設定錯誤: {},HierarchyElementMeta does not setup properly: {}
 123,{} 欄位 {} 不合法,{} parameter {} is not valid
+124,找不到檔案 {},file {} is not found
 200,{} 與 {} component enum key {} 重複,{} and {} contain duplicated key {}
 201,"載入 component 失敗, server: {}, key: {}","loading component failed, server: {}, key: {}"
 202,component 類型 {} 不存在,component type {} does not exist

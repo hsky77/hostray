@@ -247,13 +247,21 @@ class WebTestCase(UnitTestCase):
 
         with Worker('server_thread') as w:
             try:
-                w.run_method(self.start_server, server, dir_path)
+                self.server_init_exception = None
+
+                def on_worker_exception(e: Exception):
+                    self.server_init_exception = e
+
+                w.run_method(self.start_server, server,
+                             dir_path, on_exception=on_worker_exception)
 
                 service: ServicesComponent = component_manager.get_component(
                     OptionalComponentTypes.Service)
 
                 response = None
                 while response is None or not response.status_code == 200:
+                    if self.server_init_exception:
+                        raise self.server_init_exception
                     try:
                         response = service.invoke('check_alive')
                     except:
