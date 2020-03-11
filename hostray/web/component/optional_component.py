@@ -229,7 +229,7 @@ class OrmDBComponent(Component):
 
     def init_db_declarative_base(self, db_id: str, declared_entity_base: DeclarativeMeta) -> None:
         if db_id in self.dbs:
-            if self.dbs[db_id]['db'] is None:
+            if not self.dbs[db_id]['db']:
                 db = OrmAccessWorkerPool(
                     pool_name=db_id, worker_limit=self.dbs[db_id]['worker'])
 
@@ -349,7 +349,7 @@ class ServicesComponent(Component):
             self.params = {k: v for k, v in config.items()
                            if k in self.request_methods and k not in ['name']}
 
-        def invoke(self, method: str = 'get', streaming_callback: Callable = None, cookies: Dict = None, **kwargs) -> requests.Response:
+        def invoke(self, method: str = 'get', route_input: str = '', streaming_callback: Callable = None, cookies: Dict = None, **kwargs) -> requests.Response:
             if method in self.methods:
                 body_params = None
                 if self.params[method] is not None:
@@ -364,20 +364,31 @@ class ServicesComponent(Component):
                 )}
 
                 if method in ['get', 'delete']:
-                    return self._send_request(self.methods[method], params=body_params, streaming_callback=streaming_callback, cookies=cookies, **params)
+                    return self._send_request(self.methods[method], route_input, params=body_params, streaming_callback=streaming_callback, cookies=cookies, **params)
                 else:
-                    return self._send_request(self.methods[method], data=body_params, streaming_callback=streaming_callback, cookies=cookies, **params)
+                    if 'json' in body_params:
+                        params['json'] = body_params['json']
+                        del body_params['json']
 
-        def _send_request(self, method: Callable, streaming_callback: Callable, chunk_size: int = 8192, cookies: Dict = None, **kwargs) -> requests.Response:
+                    if 'data' in body_params:
+                        params['data'] = body_params['data']
+                        del body_params['data']
+                    else:
+                        params['data'] = body_params
+
+                    return self._send_request(self.methods[method], route_input, streaming_callback=streaming_callback, cookies=cookies, **params)
+
+        def _send_request(self, method: Callable, route_input: str = '', streaming_callback: Callable = None, chunk_size: int = 8192, cookies: Dict = None, **kwargs) -> requests.Response:
+            url = self.url + '/' + route_input if route_input else self.url
             if callable(streaming_callback):  # streaming
-                with method(self.url,
+                with method(url,
                             stream=True, cookies=cookies, **kwargs) as r:
                     r.raise_for_status()
                     for chunk in r.iter_content(chunk_size=chunk_size):
                         streaming_callback(chunk)
             else:  # normal
                 response = method(
-                    self.url, cookies=cookies, **kwargs)
+                    url, cookies=cookies, **kwargs)
                 response.close()
                 return response
 
@@ -405,11 +416,12 @@ class ServicesComponent(Component):
 
         return {**super().info(), **{'info': res}}
 
-    def invoke(self, service_name: str, method='get', streaming_callback: Callable = None, **kwargs) -> requests.Response:
-        return self.services[service_name].invoke(method, streaming_callback, **kwargs)
+    def invoke(self, service_name: str, method='get', route_input: str = '', streaming_callback: Callable = None, **kwargs) -> requests.Response:
+        return self.services[service_name].invoke(method, route_input, streaming_callback, **kwargs)
 
-    async def invoke_async(self, service_name: str, method='get', streaming_callback: Callable = None, **kwargs) -> requests.Response:
+    async def invoke_async(self, service_name: str, method='get', route_input: str = '', streaming_callback: Callable = None, **kwargs) -> requests.Response:
         return await self.worker_poll.run_method_async(self.services[service_name].invoke,
                                                        method,
+                                                       route_input,
                                                        streaming_callback,
                                                        **kwargs)

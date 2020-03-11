@@ -79,8 +79,8 @@ class ControllerAddon():
         self.application.run_method_in_queue(
             self.logger.error, msg, *args, exc_info=exc_info, extra=extra, stack_info=stack_info)
 
-    async def invoke_service_async(self, service_name: str, method: str = 'get', streaming_callback: Callable = None, **kwargs) -> Response:
+    async def invoke_service_async(self, service_name: str, method: str = 'get', route_input: str = '', streaming_callback: Callable = None, **kwargs) -> Response:
         if self.services is None:
             self.services = self.component_manager.get_component(
                 OptionalComponentTypes.Service)
-        return await self.services.invoke_async(service_name, method=method, streaming_callback=streaming_callback, **kwargs)
+        return await self.services.invoke_async(service_name, method=method, route_input=route_input, streaming_callback=streaming_callback, **kwargs)
