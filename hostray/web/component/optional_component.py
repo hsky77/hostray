@@ -332,12 +332,14 @@ class ServicesComponent(Component):
             'option': requests.options
         }
 
-        request_parameters = {
-            'headers': dict,
-            'timeout': float,
-            'allow_redirects': bool,
-            'cert': tuple
-        }
+        request_parameters = [
+            'headers',
+            'timeout',
+            'allow_redirects',
+            'cert',
+            'data',
+            'json'
+        ]
 
         def __init__(self, url: str, config: Dict):
             self.url = url
@@ -351,6 +353,12 @@ class ServicesComponent(Component):
 
         def invoke(self, method: str = 'get', route_input: str = '', streaming_callback: Callable = None, cookies: Dict = None, **kwargs) -> requests.Response:
             if method in self.methods:
+                params = {k: v for k, v in kwargs.items()
+                          if k in self.request_parameters}
+
+                kwargs = {k: v for k, v in kwargs.items()
+                          if k not in self.request_parameters}
+
                 body_params = None
                 if self.params[method] is not None:
                     body_params = {k: v for k, v in kwargs.items()
@@ -358,23 +366,13 @@ class ServicesComponent(Component):
                 else:
                     body_params = kwargs
 
-                params = {k: v for k, v in kwargs.items()
-                          if k in self.request_parameters and (
-                              isinstance(v, self.request_parameters[k])
-                )}
-
                 if method in ['get', 'delete']:
                     return self._send_request(self.methods[method], route_input, params=body_params, streaming_callback=streaming_callback, cookies=cookies, **params)
                 else:
-                    if 'json' in body_params:
-                        params['json'] = body_params['json']
-                        del body_params['json']
-
-                    if 'data' in body_params:
-                        params['data'] = body_params['data']
-                        del body_params['data']
-                    else:
+                    if 'data' not in params:
                         params['data'] = body_params
+                    else:
+                        params['data'].update(body_params)
 
                     return self._send_request(self.methods[method], route_input, streaming_callback=streaming_callback, cookies=cookies, **params)
 
