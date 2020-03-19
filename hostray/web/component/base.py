@@ -68,8 +68,8 @@ class ComponentManager():
             info[component.component_type.enum_key] = component.info()
         return info
 
-    def dispose_components(self) -> None:
-        self.boardcast('dispose', self)
+    async def dispose_components(self) -> None:
+        await self.boardcast_async('dispose', self)
 
     def boardcast(self, method: str, *arugs, **kwargs) -> List[Tuple[ComponentTypes, Any]]:
         """
@@ -135,7 +135,6 @@ class ComponentManager():
 
         raise HostrayWebException(
             LocalCode_Component_Type_Not_Exist, enum_type)
-        
 
     def pick_component(self, enum_types: List[ComponentTypes]) -> Union[Component, None]:
         """return the first founded stored component object of enum_types"""

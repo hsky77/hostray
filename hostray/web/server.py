@@ -57,11 +57,11 @@ class HostrayApplication(Application):
             LocalCode_Application_Closing))
         self.do_close = True
 
-    def do_exit(self):
+    async def do_exit(self):
         if self.do_close:
             if not self.exiting:
                 self.exiting = True
-                self.component_manager.dispose_components()
+                await self.component_manager.dispose_components()
                 from tornado.ioloop import IOLoop
                 IOLoop.current().stop()
                 self.logger.info(self.get_localized_message(
