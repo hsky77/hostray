@@ -109,7 +109,8 @@ class LoggerComponent(Component):
     default_loggers = ['tornado.access',
                        'tornado.application',
                        'tornado.general',
-                       'sqlalchemy']
+                       'sqlalchemy',
+                       'sqlalchemy.orm.mapper.Mapper']
 
     def __init__(self, component_type: ComponentTypes):
         super().__init__(component_type)
@@ -127,21 +128,22 @@ class LoggerComponent(Component):
         self.set_default_logger_echo(False)
 
     def set_default_logger_echo(self, echo: bool) -> None:
-        from logging import getLogger
+        from logging import getLogger, ERROR, DEBUG
         for name in self.default_loggers:
             logger = getLogger(name)
-            logger.propagate = echo
+            logger.setLevel(ERROR if not echo else DEBUG)
 
     def get_logger(self, name: str, sub_dir: str = '', mode: str = 'a', encoding: str = 'utf-8',
                    echo: bool = False) -> HostrayLogger:
         """create and return logger object, sub_dir appends the path to configured log path"""
+        from logging import getLogger, ERROR, DEBUG
         if self.dir:
             sub_dir = join_path(self.dir, sub_dir)
         else:
             sub_dir = None
         logger = get_Hostray_logger(name, sub_dir, mode,
                                     encoding, self.log_to_resource)
-        logger.propagate = echo
+        logger.setLevel(ERROR if not echo else DEBUG)
         return logger
 
 
