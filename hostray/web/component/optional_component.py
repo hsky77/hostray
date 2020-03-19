@@ -75,14 +75,15 @@ hostray application loads the components if server_config.yaml specified
 Last Updated:  Tuesday, 5th November 2019 by hsky77 (howardlkung@gmail.com)
 '''
 
-
+import asyncio
 import time
 from enum import Enum
-from typing import Union, Callable, Dict, Tuple, Any
+from typing import Union, Callable, Dict, Tuple, Any, List, Awaitable
 from datetime import datetime, timedelta
 from contextlib import contextmanager
-import requests
+from requests import Response
 
+from aiohttp import request, ClientResponse, TCPConnector, ClientSession
 from hostray.util import generate_base64_uid, join_path, asynccontextmanager
 from hostray.util.orm import OrmAccessWorkerPool, DB_MODULE_NAME, DeclarativeMeta
 
@@ -323,77 +324,155 @@ class ServicesComponent(Component):
 
     class ServiceClient():
         """client to send request"""
-        request_methods = {
-            'get': requests.get,
-            'post': requests.post,
-            'patch': requests.patch,
-            'put': requests.put,
-            'delete': requests.delete,
-            'option': requests.options
-        }
+        request_methods = [
+            'get',
+            'post',
+            'patch',
+            'put',
+            'delete',
+            'option'
+        ]
 
         request_parameters = [
+            # aiohttp request reserved parameters
+            'params',
             'headers',
             'timeout',
             'allow_redirects',
             'cert',
             'data',
-            'json'
+            'json',
+            'cookies',
+            'skip_auto_headers',
+            'auth',
+            'max_redirects',
+            'compress',
+            'chunked',
+            'expect100',
+            'raise_for_status',
+            'read_until_eof',
+            'proxy',
+            'proxy_auth',
+            'verify_ssl',
+            'fingerprint',
+            'ssl_context',
+            'ssl',
+            'proxy_headers',
+            'trace_request_ctx'
         ]
 
-        def __init__(self, url: str, config: Dict):
-            self.url = url
-            self.name = config['name']
-            self.config = {k: v for k, v in config.items() if not 'name' in k}
-            self.methods = {k: v for k,
-                            v in self.request_methods.items() if k in config.keys()}
+        def __init__(self, url_prefix: str = '', config: Dict = None, async_connection_limit: int = 30, async_connection_limit_pre_host: int = 10):
+            self.url = url_prefix
+            self.params = {}
+            if config:
+                self.config = {k: v for k,
+                               v in config.items() if not 'name' in k}
+                self.methods = [
+                    k for k in self.request_methods if k in config.keys()]
+                if len(self.methods) == 0:
+                    self.methods = self.request_methods
 
-            self.params = {k: v for k, v in config.items()
-                           if k in self.request_methods and k not in ['name']}
+                if len(self.methods) > 0:
+                    self.params = {k: v for k, v in config.items()
+                                   if k in self.request_methods and k not in ['name']}
+            else:
+                self.methods = self.request_methods
 
-        def invoke(self, method: str = 'get', route_input: str = '', streaming_callback: Callable = None, cookies: Dict = None, **kwargs) -> requests.Response:
+            self.client: ClientSession = None
+            self.limit = async_connection_limit
+            self.limit_pre_host = async_connection_limit_pre_host
+
+        def set_async_client(self, client: ClientSession = None) -> None:
+            if not self.client:
+                if not client:
+                    self.client = ClientSession(connector=TCPConnector(
+                        limit=self.limit, limit_per_host=self.limit_pre_host))
+                else:
+                    self.client = client
+
+                self.async_methods = {
+                    'get': self.client.get,
+                    'post': self.client.post,
+                    'put': self.client.put,
+                    'delete': self.client.delete,
+                    'patch': self.client.patch,
+                    'head': self.client.head,
+                    'options': self.client.options
+                }
+
+        def invoke(self,
+                   url: str,
+                   method: str = 'get',
+                   route_input: str = '',
+                   streaming_callback: Callable = None,
+                   chunk_size: int = 8192,
+                   **kwargs) -> Response:
+            loop = asyncio.get_event_loop()
+            return loop.run_until_complete(self.invoke_async(
+                url, method, route_input, streaming_callback, chunk_size, **kwargs))
+
+        async def invoke_async(self,
+                               url: str = '',
+                               method: str = 'get',
+                               route_input: str = '',
+                               streaming_callback: Callable = None,
+                               chunk_size: int = 8192,
+                               **kwargs) -> Response:
+            if self.url:
+                url = self.url + '/' + route_input if route_input else self.url
+
+            kwargs = self.__parse_parameters(method, **kwargs)
+
             if method in self.methods:
+                result: Response = Response()
+                if callable(streaming_callback):
+                    async with self.async_methods[method](url, **kwargs) as response:
+                        async for chunk in response.content.iter_chunked(chunk_size):
+                            streaming_callback(chunk)
+                else:
+                    async with self.async_methods[method](url, **kwargs) as response:
+                        dt = datetime.now()
+                        result._content = await response.read()
+                        dt = datetime.now() - dt
+
+                result.status_code = response.status
+                result.url = str(response.real_url)
+                result.headers = {
+                    k: v for k, v in response.headers.items()}
+                result.cookies = response.cookies
+                result.history = response.history
+                result.elapsed = dt
+                result.encoding = response.get_encoding()
+                result.request = response.request_info
+                return result
+
+        def __parse_parameters(self, method: str, **kwargs):
+            params = {k: v for k, v in kwargs.items()
+                      if k not in self.request_parameters}
+
+            if method in self.params and self.params[method]:
                 params = {k: v for k, v in kwargs.items()
-                          if k in self.request_parameters}
+                          if k in self.params[method]}
 
-                kwargs = {k: v for k, v in kwargs.items()
-                          if k not in self.request_parameters}
+            if method in ['get', 'delete']:
+                params = {'params': params}
+            else:
+                params = {'data': params}
 
-                body_params = None
-                if self.params[method] is not None:
-                    body_params = {k: v for k, v in kwargs.items()
-                                   if k in self.params[method]}
-                else:
-                    body_params = kwargs
+            kwargs = {**{k: v for k, v in kwargs.items()
+                         if k in self.request_parameters}, **params}
 
-                if method in ['get', 'delete']:
-                    return self._send_request(self.methods[method], route_input, params=body_params, streaming_callback=streaming_callback, cookies=cookies, **params)
-                else:
-                    if 'data' not in params:
-                        params['data'] = body_params
-                    else:
-                        params['data'].update(body_params)
+            return kwargs
 
-                    return self._send_request(self.methods[method], route_input, streaming_callback=streaming_callback, cookies=cookies, **params)
-
-        def _send_request(self, method: Callable, route_input: str = '', streaming_callback: Callable = None, chunk_size: int = 8192, cookies: Dict = None, **kwargs) -> requests.Response:
-            url = self.url + '/' + route_input if route_input else self.url
-            if callable(streaming_callback):  # streaming
-                with method(url,
-                            stream=True, cookies=cookies, **kwargs) as r:
-                    r.raise_for_status()
-                    for chunk in r.iter_content(chunk_size=chunk_size):
-                        streaming_callback(chunk)
-            else:  # normal
-                response = method(
-                    url, cookies=cookies, **kwargs)
-                response.close()
-                return response
-
-    def init(self, component_manager: ComponentManager, **kwargs) -> None:
+    def init(self, component_manager: ComponentManager, limit: int = 30, limit_per_host: int = 10,  **kwargs) -> None:
         self.worker_poll: WorkerPoolComponent = component_manager.get_component(
             DefaultComponentTypes.WorkerPool)
         self.services = {}
+        self.limit = limit
+        self.limit_pre_host = limit_per_host
+        self.default_client = ServicesComponent.ServiceClient(
+            async_connection_limit=limit, async_connection_limit_pre_host=limit_per_host)
+        self.client = None
 
         for url in kwargs.keys():
             apis = kwargs.get(url)
@@ -414,12 +493,42 @@ class ServicesComponent(Component):
 
         return {**super().info(), **{'info': res}}
 
-    def invoke(self, service_name: str, method='get', route_input: str = '', streaming_callback: Callable = None, **kwargs) -> requests.Response:
-        return self.services[service_name].invoke(method, route_input, streaming_callback, **kwargs)
+    def invoke(self,
+               service_name_or_url: str = None,
+               method='get',
+               route_input: str = '',
+               streaming_callback: Callable = None,
+               chunk_size: int = 8192,
+               **kwargs) -> Response:
+        self.__init_client()
 
-    async def invoke_async(self, service_name: str, method='get', route_input: str = '', streaming_callback: Callable = None, **kwargs) -> requests.Response:
-        return await self.worker_poll.run_method_async(self.services[service_name].invoke,
-                                                       method,
-                                                       route_input,
-                                                       streaming_callback,
-                                                       **kwargs)
+        if service_name_or_url in self.services:
+            return self.services[service_name_or_url].invoke(None, method, route_input, streaming_callback, chunk_size, **kwargs)
+        else:
+            return self.default_client.invoke(service_name_or_url, method, route_input, streaming_callback, chunk_size, **kwargs)
+
+    async def invoke_async(self,
+                           service_name_or_url: str = None,
+                           method='get',
+                           route_input: str = '',
+                           streaming_callback: Callable = None,
+                           chunk_size: int = 8192,
+                           **kwargs) -> Response:
+        self.__init_client()
+
+        if service_name_or_url in self.services:
+            return await self.services[service_name_or_url].invoke_async(None, method, route_input, streaming_callback, chunk_size, **kwargs)
+        else:
+            return await self.default_client.invoke_async(service_name_or_url, method, route_input, streaming_callback, chunk_size, **kwargs)
+
+    def __init_client(self):
+        if not self.client:
+            self.client = ClientSession(connector=TCPConnector(
+                limit=self.limit, limit_per_host=self.limit_pre_host))
+            for _, client in self.services.items():
+                client.set_async_client(self.client)
+            self.default_client.set_async_client(self.client)
+
+    async def dispose(self, component_manager: ComponentManager):
+        if self.client:
+            await self.client.close()

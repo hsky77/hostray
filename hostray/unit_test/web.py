@@ -227,7 +227,8 @@ class WebTestCase(UnitTestCase):
 
         finally:
             # queue will run at this moment if this test runs too fast
-            component_manager.boardcast('dispose', component_manager)
+            loop.run_until_complete(
+                component_manager.boardcast_async('dispose', component_manager))
             self.assertTrue(self.test_func_runned)
 
     def test_server_and_controllers(self):
@@ -337,6 +338,9 @@ class WebTestCase(UnitTestCase):
                 server.stop()
                 while w.is_func_running:  # wait for server stoped
                     pass
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(
+                    component_manager.boardcast_async('dispose', component_manager))
 
     def start_server(self, server, dir_path: str):
         from tornado.ioloop import IOLoop
