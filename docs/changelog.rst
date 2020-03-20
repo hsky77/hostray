@@ -1,9 +1,9 @@
 Change log
 =====================================
 
-* **0.7.4 - Mar. 20, 2020**:
+* **0.7.5 - Mar. 20, 2020**:
 
-  * Replace `requests <https://requests.readthedocs.io/en/master/>`__ with `aiohttp <https://github.com/aio-libs/aiohttp>`__.
+  * Use `aiohttp <https://github.com/aio-libs/aiohttp>`__. for sending requests async asynchronously.
   * Set logger level to Error when debug set to false in server_config.yaml.
   * Method dispose() of component classes become awaitable.
   * Add certification authority 'ca' parameter for ssl settings in server_config.yaml.
