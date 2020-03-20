@@ -81,7 +81,7 @@ from enum import Enum
 from typing import Union, Callable, Dict, Tuple, Any, List, Awaitable
 from datetime import datetime, timedelta
 from contextlib import contextmanager
-from requests import Response
+import requests
 
 from aiohttp import ClientResponse, TCPConnector, ClientSession
 from hostray.util import generate_base64_uid, join_path, asynccontextmanager
@@ -324,14 +324,14 @@ class ServicesComponent(Component):
 
     class ServiceClient():
         """client to send request"""
-        request_methods = [
-            'get',
-            'post',
-            'patch',
-            'put',
-            'delete',
-            'option'
-        ]
+        request_methods = {
+            'get': requests.get,
+            'post': requests.post,
+            'patch': requests.patch,
+            'put': requests.put,
+            'delete': requests.delete,
+            'options': requests.options
+        }
 
         request_parameters = [
             # aiohttp request reserved parameters
@@ -406,10 +406,22 @@ class ServicesComponent(Component):
                    route_input: str = '',
                    streaming_callback: Callable = None,
                    chunk_size: int = 8192,
-                   **kwargs) -> Response:
-            loop = asyncio.get_event_loop()
-            return loop.run_until_complete(self.invoke_async(
-                url, method, route_input, streaming_callback, chunk_size, **kwargs))
+                   **kwargs) -> requests.Response:
+            if self.url:
+                url = self.url + '/' + route_input if route_input else self.url
+
+            kwargs = self.__parse_parameters(method, **kwargs)
+
+            if method in self.methods:
+                if callable(streaming_callback):
+                    with self.request_methods[method](url, stream=True, **kwargs) as response:
+                        response.raise_for_status()
+                        for chunk in response.iter_content(chunk_size=chunk_size):
+                            streaming_callback(chunk)
+                        return response
+                else:
+                    with self.request_methods[method](url, **kwargs) as response:
+                        return response
 
         async def invoke_async(self,
                                url: str = '',
@@ -417,14 +429,14 @@ class ServicesComponent(Component):
                                route_input: str = '',
                                streaming_callback: Callable = None,
                                chunk_size: int = 8192,
-                               **kwargs) -> Response:
+                               **kwargs) -> requests.Response:
             if self.url:
                 url = self.url + '/' + route_input if route_input else self.url
 
             kwargs = self.__parse_parameters(method, **kwargs)
 
             if method in self.methods:
-                result: Response = Response()
+                result = requests.Response()
                 if callable(streaming_callback):
                     async with self.async_methods[method](url, **kwargs) as response:
                         async for chunk in response.content.iter_chunked(chunk_size):
@@ -454,10 +466,11 @@ class ServicesComponent(Component):
                 params = {k: v for k, v in kwargs.items()
                           if k in self.params[method]}
 
-            if method in ['get', 'delete']:
-                params = {'params': params}
-            else:
-                params = {'data': params}
+            if len(params) > 0:
+                if method in ['get', 'delete']:
+                    params = {'params': params}
+                else:
+                    params = {'data': params}
 
             kwargs = {**{k: v for k, v in kwargs.items()
                          if k in self.request_parameters}, **params}
@@ -499,9 +512,7 @@ class ServicesComponent(Component):
                route_input: str = '',
                streaming_callback: Callable = None,
                chunk_size: int = 8192,
-               **kwargs) -> Response:
-        self.__init_client()
-
+               **kwargs) -> requests.Response:
         if service_name_or_url in self.services:
             return self.services[service_name_or_url].invoke(None, method, route_input, streaming_callback, chunk_size, **kwargs)
         else:
@@ -513,7 +524,7 @@ class ServicesComponent(Component):
                            route_input: str = '',
                            streaming_callback: Callable = None,
                            chunk_size: int = 8192,
-                           **kwargs) -> Response:
+                           **kwargs) -> requests.Response:
         self.__init_client()
 
         if service_name_or_url in self.services:
