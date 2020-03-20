@@ -83,7 +83,7 @@ from datetime import datetime, timedelta
 from contextlib import contextmanager
 from requests import Response
 
-from aiohttp import request, ClientResponse, TCPConnector, ClientSession
+from aiohttp import ClientResponse, TCPConnector, ClientSession
 from hostray.util import generate_base64_uid, join_path, asynccontextmanager
 from hostray.util.orm import OrmAccessWorkerPool, DB_MODULE_NAME, DeclarativeMeta
 

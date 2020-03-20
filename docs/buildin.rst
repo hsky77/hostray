@@ -23,8 +23,9 @@ config:
     port: 8888                          # port number
     debug: True                         # enable debug mode
     ssl:
-        crt: xxx.crt                    # path of ssl certificate
-        key: xxx.key                    # path of private key file
+        crt: xxx.crt                    # absolute path of ssl certificate
+        key: xxx.key                    # absolute path of private key file
+        ca: xxx.ca                      # optional: absolute path of ca file
 
     controller:
         /api_route:                     # api routing path
