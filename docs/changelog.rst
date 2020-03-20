@@ -3,7 +3,7 @@ Change log
 
 * **0.7.5 - Mar. 20, 2020**:
 
-  * Use `aiohttp <https://github.com/aio-libs/aiohttp>`__. for sending requests async asynchronously.
+  * Use `aiohttp <https://github.com/aio-libs/aiohttp>`__ for sending requests asynchronously.
   * Set logger level to Error when debug set to false in server_config.yaml.
   * Method dispose() of component classes become awaitable.
   * Add certification authority 'ca' parameter for ssl settings in server_config.yaml.
