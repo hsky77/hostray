@@ -1,7 +1,7 @@
 Change log
 =====================================
 
-* **0.7.5.1 - Mar. 20, 2020**:
+* **0.7.5.1 - Apr. 15, 2020**:
   * Add missing dependency, `requests <https://requests.readthedocs.io/en/master/>`__
 
 * **0.7.5 - Mar. 20, 2020**:
