@@ -8,4 +8,4 @@ Last Updated:  Thursday, 7th November 2019 by hsky77 (howardlkung@gmail.com)
 '''
 
 Module_Path = __path__[0]
-Version = '0.7.5'
+Version = '0.7.5.1'

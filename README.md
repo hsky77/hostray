@@ -20,6 +20,9 @@ Read [documentation](https://hostray.readthedocs.io/en/latest/) for more informa
 
 ## Change log
 
+* **0.7.5.1 - Mar. 20, 2020**:
+  * Add missing dependency, [requests](https://requests.readthedocs.io/en/master/)
+
 * **0.7.5 - Mar. 20, 2020**:
 
   * Use [aiohttp](https://github.com/aio-libs/aiohttp) for sending requests asynchronously.

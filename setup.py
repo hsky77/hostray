@@ -36,7 +36,8 @@ setuptools.setup(
                       'sqlalchemy>=1.3.5',
                       'coloredlogs>=10.0',
                       'PyMySQL>=0.9.3',
-                      'aiohttp>=3.6.2'],
+                      'aiohttp>=3.6.2',
+                      'requests>=2.20.0'],
     python_requires='>=3.6',
     package_data={'': ['*.yaml', '*.csv']}
 )
